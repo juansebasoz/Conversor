@@ -1,7 +1,9 @@
 package Logica;
 
+import java.math.BigInteger;
+
 /**
- * Created by fmont on 23 feb 2017.
+ * Created by fmont on 02 mar 2017.
  */
 
 public class Conversor {
@@ -32,13 +34,13 @@ public class Conversor {
                     break;
 
                 case 7:
-                    conversion = decimal_hexadecimal(Long.parseLong(numero));
+                    conversion = decimal_hexadecimal(numero);
                     break;
                 case 8:
-                    conversion = decimal_octal(Long.parseLong(numero));
+                    conversion = decimal_octal(numero);
                     break;
                 case 9:
-                    conversion = decimal_binario(Long.parseLong(numero));
+                    conversion = decimal_binario(numero);
                     break;
 
                 case 10:
@@ -52,29 +54,26 @@ public class Conversor {
                     break;
             }
             try {
-                if (Integer.parseInt(numero) == 0)
+                if (Long.parseLong(numero) == 0)
                     return "0";
-            } catch (NumberFormatException e){}
+            } catch (NumberFormatException e) {
+            }
         }
         return conversion;
     }
 
-    // Metodo para elevar un numero
-    private long elevar(long b, long e) {
-        long res = b;
-        if (e == 0) {
-            res = 1;
+    private BigInteger elevar(BigInteger base, BigInteger exponente) {
+        BigInteger resultado = base;
+        if (exponente.compareTo(BigInteger.ZERO) == 0) {
+            resultado = BigInteger.ONE;
         } else {
-            for (int i = 1; i < e; i++) {
-                res *= b;
+            for (BigInteger i = BigInteger.ONE; i.compareTo(exponente) < 0; i = i.add(BigInteger.ONE)) {
+                resultado = resultado.multiply(base);
             }
         }
-        return res;
+        return resultado;
     }
 
-    /*
-     * Metodo que resive un numero y devuelve la letra correspondiente
-     */
     private char letras(int n) {
         char c = ' ';
         switch (n) {
@@ -100,9 +99,6 @@ public class Conversor {
         return c;
     }
 
-    /*
-     * Metodo que resive una letra y devuelve el numero correspondiente
-     */
     private int numeros(char c) {
         int n = 0;
         switch (c) {
@@ -129,111 +125,124 @@ public class Conversor {
     }
 
     /// BINARIO//////////////////////////////////////////////////////////////////////////////////////
-    public String binario_hexadecimal(String binario) {
-        return decimal_hexadecimal(Long.parseLong(binario_decimal(binario)));
+    private String binario_hexadecimal(String binario) {
+        return decimal_hexadecimal(binario_decimal(binario));
     }
 
-    public String binario_decimal(String binario) {
-        return  resolver(binario,2);
+    private String binario_decimal(String binario) {
+        return resolver(binario, new BigInteger("2"));
     }
 
-    public String binario_octal(String binario) {
-        return decimal_octal(Long.parseLong(binario_decimal(binario)));
+    private String binario_octal(String binario) {
+        return decimal_octal(binario_decimal(binario));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// OCTAL////////////////////////////////////////////////////////////////////////////////////////
-    public String octal_hexadecimal(String octal) {
-        return decimal_hexadecimal(Long.parseLong(octal_decimal(octal)));
+    private String octal_hexadecimal(String octal) {
+        return decimal_hexadecimal(octal_decimal(octal));
     }
 
-    public String octal_decimal(String octal) {
-        return resolver(octal,8);
+    private String octal_decimal(String octal) {
+        return resolver(octal, new BigInteger("8"));
     }
 
-    public String octal_binaro(String octal) {
-        return decimal_binario(Long.parseLong(octal_decimal(octal)));
+    private String octal_binaro(String octal) {
+        return decimal_binario(octal_decimal(octal));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// DECIMAL//////////////////////////////////////////////////////////////////////////////////////
-    public String decimal_hexadecimal(long numero) {
+    private String decimal_hexadecimal(String numero) {
         String hexadecimal = "";
-
-        for (long i = numero; i > 0; i /= 16) {
-            long res = i % 16;
-            if (res >= 10)
-                hexadecimal += letras((int) res);
-            else
-                hexadecimal += res;
+        for (BigInteger i = new BigInteger(numero); i.compareTo(BigInteger.ZERO) > 0; i = i
+                .divide(new BigInteger("16"))) {
+            BigInteger resultado = i.mod(new BigInteger("16"));
+            if (resultado.compareTo(new BigInteger("10")) >= 0) {
+                hexadecimal += letras(resultado.intValue());
+            } else {
+                hexadecimal += resultado;
+            }
         }
         return invertir(hexadecimal);
     }
 
-    public String decimal_octal(long numero) {
+    private String decimal_octal(String numero) {
         String octal = "";
-
-        for (long i = numero; i > 0; i /= 8)
-            octal += i % 8;
+        for (BigInteger i = new BigInteger(numero); i.compareTo(BigInteger.ZERO) > 0; i = i
+                .divide(new BigInteger("8"))) {
+            octal += i.mod(new BigInteger("8"));
+        }
 
         return invertir(octal);
     }
 
-    public String decimal_binario(long numero) {
+    private String decimal_binario(String numero) {
         String binario = "";
-
-        for (long i = numero; i > 0; i /= 2)
-            binario += i % 2;
+        for (BigInteger i = new BigInteger(numero); i.compareTo(BigInteger.ZERO) > 0; i = i
+                .divide(new BigInteger("2"))) {
+            binario += i.mod(new BigInteger("2"));
+        }
 
         return invertir(binario);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// HEXADECIMAL//////////////////////////////////////////////////////////////////////////////////
-    public String hexadecimal_decimal(String hexadecimal) {
-        long decimal = 0;
+    private String hexadecimal_decimal(String hexadecimal) {
+        BigInteger decimal = BigInteger.ZERO;
+        hexadecimal = hexadecimal.toUpperCase();
         String letra = "ABCDEF";
-        int t = hexadecimal.length();
-        int nums[] = new int[t];
+        BigInteger tam = new BigInteger("" + hexadecimal.length());
+        BigInteger nums[] = new BigInteger[tam.intValue()];
 
-        for (int i = 0; i < t; i++) {
-            for (int j = 0; j < letra.length(); j++) {
-                char c = hexadecimal.charAt(i);
-                if (c == letra.charAt(j))
-                    nums[i] = numeros(c);
+        // for (BigInteger i = BigInteger.ZERO; i.compareTo(tam) < 0; i =
+        // i.add(BigInteger.ONE))
+        // nums[i.intValue()] = BigInteger.ZERO;
+        for (BigInteger i = BigInteger.ZERO; i.compareTo(tam) < 0; i = i.add(BigInteger.ONE)) {
+            for (BigInteger j = BigInteger.ZERO; j.compareTo(new BigInteger("" + letra.length())) < 0; j = j
+                    .add(BigInteger.ONE)) {
+                char c = hexadecimal.charAt(i.intValue());
+                if (c == letra.charAt(j.intValue())) {
+                    nums[i.intValue()] = BigInteger.valueOf(numeros(c));
+                }
             }
         }
-        for (int i = 0; i < t; i++) {
-            if (hexadecimal.charAt(i) < 65)
-                nums[i] = Integer.parseInt("" + hexadecimal.charAt(i));
+        for (BigInteger i = BigInteger.ZERO; i.compareTo(tam) < 0; i = i.add(BigInteger.ONE)) {
+            if (hexadecimal.charAt(i.intValue()) < 65) {
+                nums[i.intValue()] = new BigInteger("" + hexadecimal.charAt(i.intValue()));
+            }
         }
-        for (int i = t - 1, j = 0; i >= 0; i--, j++)
-            decimal += nums[i] * elevar(16, j);
-
-        return "" + decimal;
+        for (BigInteger i = tam.subtract(BigInteger.ONE), j = BigInteger.ZERO; i.compareTo(BigInteger.ZERO) >= 0; i = i
+                .subtract(BigInteger.ONE), j = j.add(BigInteger.ONE)) {
+            decimal = decimal.add(new BigInteger("" + nums[i.intValue()].multiply(elevar(new BigInteger("16"), j))));
+        }
+        return decimal.toString();
     }
 
-    public String hexadecimal_octal(String hexadecimal) {
-        return decimal_octal(Long.parseLong(hexadecimal_decimal(hexadecimal)));
+    private String hexadecimal_octal(String hexadecimal) {
+        return decimal_octal(hexadecimal_decimal(hexadecimal));
     }
 
-    public String hexadecimal_binario(String hexadecimal) {
-        return decimal_binario(Long.parseLong(hexadecimal_decimal(hexadecimal)));
+    private String hexadecimal_binario(String hexadecimal) {
+        return decimal_binario(hexadecimal_decimal(hexadecimal));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private String invertir(String numero){
+    private String invertir(String numero) {
         String resultado = "";
         for (int i = numero.length() - 1; i >= 0; i--)
             resultado += numero.charAt(i);
         return resultado;
     }
 
-    private String resolver(String numero, int base){
-        long resultado = 0;
-        for (int i = numero.length() - 1, j = 0; i >= 0; i--, j++)
-            resultado += Long.parseLong("" + numero.charAt(i)) * elevar(base, j);
-        return "" + resultado;
+    private String resolver(String numero, BigInteger base) {
+        BigInteger resultadol = BigInteger.ZERO;
+        for (BigInteger i = new BigInteger("" + (numero.length() - 1)), j = BigInteger.ZERO; i
+                .compareTo(BigInteger.ZERO) >= 0; i = i.subtract(BigInteger.ONE), j = j.add(BigInteger.ONE)) {
+            resultadol = resultadol.add(new BigInteger("" + numero.charAt(i.intValue())).multiply(elevar(base, j)));
+        }
+        return resultadol.toString();
     }
 
 }
