@@ -237,12 +237,12 @@ public class Conversor {
     }
 
     private String resolver(String numero, BigInteger base) {
-        BigInteger resultadol = BigInteger.ZERO;
+        BigInteger resultado = BigInteger.ZERO;
         for (BigInteger i = new BigInteger("" + (numero.length() - 1)), j = BigInteger.ZERO; i
                 .compareTo(BigInteger.ZERO) >= 0; i = i.subtract(BigInteger.ONE), j = j.add(BigInteger.ONE)) {
-            resultadol = resultadol.add(new BigInteger("" + numero.charAt(i.intValue())).multiply(elevar(base, j)));
+            resultado = resultado.add(new BigInteger("" + numero.charAt(i.intValue())).multiply(elevar(base, j)));
         }
-        return resultadol.toString();
+        return resultado.toString();
     }
 
 }
