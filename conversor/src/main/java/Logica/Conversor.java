@@ -5,6 +5,7 @@ package Logica;
  */
 
 public class Conversor {
+
     public String opciones(String numero, int opcion) {
 
         String conversion = "";
@@ -53,8 +54,7 @@ public class Conversor {
             try {
                 if (Integer.parseInt(numero) == 0)
                     return "0";
-            } catch (NumberFormatException e) {
-            }
+            } catch (NumberFormatException e){}
         }
         return conversion;
     }
@@ -129,100 +129,69 @@ public class Conversor {
     }
 
     /// BINARIO//////////////////////////////////////////////////////////////////////////////////////
-    private String binario_hexadecimal(String binario) {
-        long numero = Long.parseLong(binario_decimal(binario));
-        return decimal_hexadecimal(numero);
+    public String binario_hexadecimal(String binario) {
+        return decimal_hexadecimal(Long.parseLong(binario_decimal(binario)));
     }
 
-    private String binario_decimal(String binario) {
-        int t = binario.length();
-        long decimal = 0;
-
-        for (int i = t - 1, j = 0; i >= 0; i--, j++) {
-            decimal += Long.parseLong("" + binario.charAt(i)) * elevar(2, j);
-        }
-        return "" + decimal;
+    public String binario_decimal(String binario) {
+        return  resolver(binario,2);
     }
 
-    private String binario_octal(String binario) {
-        long numero = Long.parseLong(binario_decimal(binario));
-        return decimal_octal(numero);
+    public String binario_octal(String binario) {
+        return decimal_octal(Long.parseLong(binario_decimal(binario)));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// OCTAL////////////////////////////////////////////////////////////////////////////////////////
-    private String octal_hexadecimal(String octal) {
-        long numero = Long.parseLong(octal_decimal(octal));
-        return decimal_hexadecimal(numero);
+    public String octal_hexadecimal(String octal) {
+        return decimal_hexadecimal(Long.parseLong(octal_decimal(octal)));
     }
 
-    private String octal_decimal(String octal) {
-        int t = octal.length();
-        long decimal = 0;
-
-        for (int i = t - 1, j = 0; i >= 0; i--, j++) {
-            decimal += Long.parseLong("" + octal.charAt(i)) * elevar(8, j);
-        }
-        return "" + decimal;
+    public String octal_decimal(String octal) {
+        return resolver(octal,8);
     }
 
-    private String octal_binaro(String octal) {
-        long numero = Long.parseLong(octal_decimal(octal));
-        return decimal_binario(numero);
+    public String octal_binaro(String octal) {
+        return decimal_binario(Long.parseLong(octal_decimal(octal)));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// DECIMAL//////////////////////////////////////////////////////////////////////////////////////
-    private String decimal_hexadecimal(long numero) {
-        String hex = "", hexadecimal = "";
+    public String decimal_hexadecimal(long numero) {
+        String hexadecimal = "";
 
         for (long i = numero; i > 0; i /= 16) {
             long res = i % 16;
-            if (res >= 10) {
-                hex += letras((int) res);
-            } else {
-                hex += res;
-            }
+            if (res >= 10)
+                hexadecimal += letras((int) res);
+            else
+                hexadecimal += res;
         }
-        for (int i = hex.length() - 1; i >= 0; i--)
-            hexadecimal += hex.charAt(i);
-
-        return hexadecimal;
+        return invertir(hexadecimal);
     }
 
-    private String decimal_octal(long numero) {
-        String oct = "", octal = "";
+    public String decimal_octal(long numero) {
+        String octal = "";
 
-        for (long i = numero; i > 0; i /= 8) {
-            long res = i % 8;
-            oct += res;
-        }
+        for (long i = numero; i > 0; i /= 8)
+            octal += i % 8;
 
-        for (int i = oct.length() - 1; i >= 0; i--)
-            octal += oct.charAt(i);
-
-        return octal;
+        return invertir(octal);
     }
 
-    private String decimal_binario(long numero) {
-        String bin = "", binario = "";
+    public String decimal_binario(long numero) {
+        String binario = "";
 
-        for (long i = numero; i > 0; i /= 2) {
-            long res = i % 2;
-            bin += res;
-        }
+        for (long i = numero; i > 0; i /= 2)
+            binario += i % 2;
 
-        for (int i = bin.length() - 1; i >= 0; i--)
-            binario += bin.charAt(i);
-
-        return binario;
+        return invertir(binario);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// HEXADECIMAL//////////////////////////////////////////////////////////////////////////////////
-    private String hexadecimal_decimal(String hexadecimal) {
+    public String hexadecimal_decimal(String hexadecimal) {
         long decimal = 0;
-        hexadecimal = hexadecimal.toUpperCase();
         String letra = "ABCDEF";
         int t = hexadecimal.length();
         int nums[] = new int[t];
@@ -230,31 +199,41 @@ public class Conversor {
         for (int i = 0; i < t; i++) {
             for (int j = 0; j < letra.length(); j++) {
                 char c = hexadecimal.charAt(i);
-                if (c == letra.charAt(j)) {
+                if (c == letra.charAt(j))
                     nums[i] = numeros(c);
-                }
             }
         }
         for (int i = 0; i < t; i++) {
-            if (hexadecimal.charAt(i) < 65) {
+            if (hexadecimal.charAt(i) < 65)
                 nums[i] = Integer.parseInt("" + hexadecimal.charAt(i));
-            }
         }
-        for (int i = t - 1, j = 0; i >= 0; i--, j++) {
-            long d = nums[i] * elevar(16, j);
-            decimal += d;
-        }
+        for (int i = t - 1, j = 0; i >= 0; i--, j++)
+            decimal += nums[i] * elevar(16, j);
+
         return "" + decimal;
     }
 
-    private String hexadecimal_octal(String hexadecimal) {
-        long numero = Long.parseLong(hexadecimal_decimal(hexadecimal));
-        return decimal_octal(numero);
+    public String hexadecimal_octal(String hexadecimal) {
+        return decimal_octal(Long.parseLong(hexadecimal_decimal(hexadecimal)));
     }
 
-    private String hexadecimal_binario(String hexadecimal) {
-        long numero = Long.parseLong(hexadecimal_decimal(hexadecimal));
-        return decimal_binario(numero);
+    public String hexadecimal_binario(String hexadecimal) {
+        return decimal_binario(Long.parseLong(hexadecimal_decimal(hexadecimal)));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private String invertir(String numero){
+        String resultado = "";
+        for (int i = numero.length() - 1; i >= 0; i--)
+            resultado += numero.charAt(i);
+        return resultado;
+    }
+
+    private String resolver(String numero, int base){
+        long resultado = 0;
+        for (int i = numero.length() - 1, j = 0; i >= 0; i--, j++)
+            resultado += Long.parseLong("" + numero.charAt(i)) * elevar(base, j);
+        return "" + resultado;
+    }
+
 }

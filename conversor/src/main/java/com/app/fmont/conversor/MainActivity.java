@@ -2,6 +2,7 @@ package com.app.fmont.conversor;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,10 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +25,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Spinner spnOpciones_2;
     private TextView txtResultado;
     private Button btnN0, btnN1, btnN2, btnN3, btnN4, btnN5, btnN6, btnN7,
-                   btnN8, btnN9, btnA, btnB, btnC, btnD, btnE, btnF, btnDel,
-                   btnAC;
+            btnN8, btnN9, btnA, btnB, btnC, btnD, btnE, btnF, btnDel,
+            btnAC;
 
-    private int opcion, opcion1, opcion2, aux;
+    private int opcion1, opcion2, aux;
     private Conversor conversor = new Conversor();
 
     @Override
@@ -55,21 +54,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 aux = opcion1;
                 String auxiliar = txtNumero.getText().toString();
-               opcion1 = spnOpciones_1.getSelectedItemPosition();
+                opcion1 = spnOpciones_1.getSelectedItemPosition();
+
                 if(opcion1 == 0){
                     binario();
+                    limiteTxt(63);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,3)));
                 }else if(opcion1 == 1){
                     octal();
+                    limiteTxt(21);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,2)));
                 }else if(opcion1 == 2){
                     decimal();
+                    limiteTxt(19);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,1)));
                 }else if(opcion1 == 3){
                     hexadecimal();
+                    limiteTxt(16);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,0)));
                 }
-                opcion = opciones(opcion1,opcion2);
             }
 
             @Override
@@ -92,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 opcion2 = spnOpciones_2.getSelectedItemPosition();
-                opcion = opciones(opcion1,opcion2);
                 convertir();
             }
 
@@ -227,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String texto = txtNumero.getText().toString().substring(0, tam - 1);
                     txtNumero.setText(texto);
                     if(tam >= 2)
-                    convertir();
+                        convertir();
                     else if(tam <= 1)
                         txtResultado.setText("");
                 }
@@ -239,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 ////////////////////////////////////////////////////////////
         }
-        }
+    }
 
     private void binario(){
         letras(false);
@@ -360,19 +362,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void convertir(){
-        if(opcion1 == 0  && txtNumero.length() < 64){
-            txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opcion));
-        }else if(opcion1 == 1 && txtNumero.length() < 21){
-            txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opcion));
-        }else if(opcion1 == 2 && txtNumero.length() < 19){
-            txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opcion));
-        }else if(opcion1 == 3 && txtNumero.length() < 16){
-            txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opcion));
+        if(opcion1 == 2){
+            if(!txtNumero.getText().toString().isEmpty()) {
+                BigInteger limite = new BigInteger(txtNumero.getText().toString());
+                if (BigInteger.valueOf(Long.MAX_VALUE).compareTo(limite) >= 0)
+                    txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opciones(opcion1, opcion2)));
+                else
+                    txtNumero.setText(txtNumero.getText().toString().substring(0,txtNumero.length()-1));
+            }
         }else {
-            Toast.makeText(MainActivity.this,"Rebaso el Limite Maximo",Toast.LENGTH_SHORT).show();
+            txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opciones(opcion1, opcion2)));
         }
-        if(opcion == -1)
+        if(opciones(opcion1, opcion2) == -1)
             txtResultado.setText(txtNumero.getText());
+    }
+
+    private void limiteTxt(int length){
+        txtNumero.setFilters( new InputFilter[] {new InputFilter.LengthFilter(length)});
     }
 
 }
