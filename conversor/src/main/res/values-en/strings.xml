@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Converter</string>
+    <string name="item_1">Binary</string>
+    <string name="item_2">Octal</string>
+    <string name="item_3">Decimal</string>
+    <string name="item_4">Hexadecimal</string>
+    <string name="txtNumero">Enter a Number</string>
+    <string name="txtResultado">Result</string>
+</resources>

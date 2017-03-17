@@ -191,14 +191,10 @@ public class Conversor {
     /// HEXADECIMAL//////////////////////////////////////////////////////////////////////////////////
     private String hexadecimal_decimal(String hexadecimal) {
         BigInteger decimal = BigInteger.ZERO;
-        hexadecimal = hexadecimal.toUpperCase();
         String letra = "ABCDEF";
         BigInteger tam = new BigInteger("" + hexadecimal.length());
         BigInteger nums[] = new BigInteger[tam.intValue()];
 
-        // for (BigInteger i = BigInteger.ZERO; i.compareTo(tam) < 0; i =
-        // i.add(BigInteger.ONE))
-        // nums[i.intValue()] = BigInteger.ZERO;
         for (BigInteger i = BigInteger.ZERO; i.compareTo(tam) < 0; i = i.add(BigInteger.ONE)) {
             for (BigInteger j = BigInteger.ZERO; j.compareTo(new BigInteger("" + letra.length())) < 0; j = j
                     .add(BigInteger.ONE)) {
@@ -229,13 +225,6 @@ public class Conversor {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private String invertir(String numero) {
-        String resultado = "";
-        for (int i = numero.length() - 1; i >= 0; i--)
-            resultado += numero.charAt(i);
-        return resultado;
-    }
-
     private String resolver(String numero, BigInteger base) {
         BigInteger resultado = BigInteger.ZERO;
         for (BigInteger i = new BigInteger("" + (numero.length() - 1)), j = BigInteger.ZERO; i
@@ -243,6 +232,13 @@ public class Conversor {
             resultado = resultado.add(new BigInteger("" + numero.charAt(i.intValue())).multiply(elevar(base, j)));
         }
         return resultado.toString();
+    }
+
+    private String invertir(String numero) {
+        String resultado = "";
+        for (int i = numero.length() - 1; i >= 0; i--)
+            resultado += numero.charAt(i);
+        return resultado;
     }
 
 }

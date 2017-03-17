@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Conversor</string>
+    <string name="item_1">Binario</string>
+    <string name="item_2">Octal</string>
+    <string name="item_3">Decimal</string>
+    <string name="item_4">Hexadecimal</string>
+    <string name="txtNumero">Ingrese un Número</string>
+    <string name="txtResultado">Resultado</string>
 </resources>

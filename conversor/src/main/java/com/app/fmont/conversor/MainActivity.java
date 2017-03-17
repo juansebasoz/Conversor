@@ -2,7 +2,6 @@ package com.app.fmont.conversor;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,7 +11,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +39,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         spnOpciones_1 = (Spinner) findViewById(R.id.spnOpciones_1);
         List lista = new ArrayList();
-        lista.add("Binario");
-        lista.add("Octal");
-        lista.add("Decimal");
-        lista.add("Hexadecimal");
+        lista.add(getResources().getString(R.string.item_1));
+        lista.add(getResources().getString(R.string.item_2));
+        lista.add(getResources().getString(R.string.item_3));
+        lista.add(getResources().getString(R.string.item_4));
         ArrayAdapter adaptador = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, lista);
         adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnOpciones_1.setAdapter(adaptador);
@@ -58,19 +56,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(opcion1 == 0){
                     binario();
-                    limiteTxt(63);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,3)));
                 }else if(opcion1 == 1){
                     octal();
-                    limiteTxt(21);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,2)));
                 }else if(opcion1 == 2){
                     decimal();
-                    limiteTxt(19);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,1)));
                 }else if(opcion1 == 3){
                     hexadecimal();
-                    limiteTxt(16);
                     txtNumero.setText(conversor.opciones(auxiliar,opciones(aux,0)));
                 }
             }
@@ -83,10 +77,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         spnOpciones_2 = (Spinner) findViewById(R.id.spnOpciones_2);
         List lista1 = new ArrayList();
-        lista1.add("Hexadecimal");
-        lista1.add("Decimal");
-        lista1.add("Octal");
-        lista1.add("Binario");
+        lista1.add(getResources().getString(R.string.item_4));
+        lista1.add(getResources().getString(R.string.item_3));
+        lista1.add(getResources().getString(R.string.item_2));
+        lista1.add(getResources().getString(R.string.item_1));
         ArrayAdapter adaptador1 = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, lista1);
         adaptador1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnOpciones_2.setAdapter(adaptador1);
@@ -362,23 +356,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void convertir(){
-        if(opcion1 == 2){
-            if(!txtNumero.getText().toString().isEmpty()) {
-                BigInteger limite = new BigInteger(txtNumero.getText().toString());
-                if (BigInteger.valueOf(Long.MAX_VALUE).compareTo(limite) >= 0)
-                    txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opciones(opcion1, opcion2)));
-                else
-                    txtNumero.setText(txtNumero.getText().toString().substring(0,txtNumero.length()-1));
-            }
-        }else {
-            txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opciones(opcion1, opcion2)));
-        }
+        txtResultado.setText(conversor.opciones(txtNumero.getText().toString(), opciones(opcion1, opcion2)));
         if(opciones(opcion1, opcion2) == -1)
             txtResultado.setText(txtNumero.getText());
-    }
-
-    private void limiteTxt(int length){
-        txtNumero.setFilters( new InputFilter[] {new InputFilter.LengthFilter(length)});
     }
 
 }
